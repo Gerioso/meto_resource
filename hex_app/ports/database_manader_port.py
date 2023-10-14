@@ -6,20 +6,23 @@ class DatabasePort:
         pass
 
 
-    def execute_query(self, query, params=None):
+    def execute(self, query, params=None):
         pass
 
 
-    def get_type(self, type_id):
+    def get_resource_type(self, type_id):
+        pass
+    
+    def get_all_resource_types(self):
         pass
 
-    def create_type(self, type_data):
+    def create_resource_type(self, type_data):
         pass
 
-    def update_type(self, type_id, type_data):
+    def update_resource_type(self, id, name, max_speed):
         pass
 
-    def delete_type(self, type_id):
+    def delete_resource_type(self, type_id):
         pass
 
     def get_resource(self, resource_id):
