@@ -10,17 +10,46 @@ class ResourceAPI:
         max_speed = data.get('max_speed', None)
         if name is None or max_speed is None:
             return {'error': 'Wrong data'}, 400
-        self.db.create_resource_type(name, int(max_speed))
-        return {'message': 'Resource type created successfully'}, 200
+        result, success = self.db.create_resource_type(name, int(max_speed))
+        if success:
+            return result, 200
+        else:
+            result, 500
     
     def get_all_resource_types(self):
-        types = self.db.get_all_resource_types()
-        result = types_to_json(types)
-        return result, 200
+        result, success = self.db.get_all_resource_types()
+        if success:
+            result = types_to_json(result)
+            return result, 200
+        else:
+            result, 500
     
-    def get_resource_type(self,resource_type_id):
-        type = self.db.get_resource_type(resource_type_id)
-        return types_to_json(type), 200
+    def get_resource_type(self, resource_type_id):
+        result, success = self.db.get_resource_type(resource_type_id)
+        if success:
+            result = types_to_json(result)
+            return result, 200
+        else:
+            result, 500
+    
+    def update_resource_type(self, id, data):
+        name = data.get('name', None)
+        max_speed = data.get('max_speed', None)
+        if name is None or max_speed is None:
+            return {'error': 'Wrong data'}, 400
+        result, success = self.db.update_resource_type(id, name, max_speed)
+        if success:
+            return result, 200
+        else:
+            result, 500
+    
+    def delete_resource_types(self, ids) :
+        result, success = self.db.delete_resource_type(ids)
+        if success:
+            return result, 200
+        else:
+            result, 500     
+
 
 
         

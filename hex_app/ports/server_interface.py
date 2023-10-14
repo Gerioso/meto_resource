@@ -1,24 +1,24 @@
 class ServerInterface:
     
-    def create_type(self, data: dict):
+    def create_resource_type(self, data: dict):
 
         pass    
 
-    def get_type(self, id: int):
+    def get_resource_type(self, id: int):
         
         pass    
 
-    def get_all_types(self):
+    def get_all_resource_types(self):
         
         pass
 
     
-    def update_type(self, data: dict):
+    def update_resource_type(self, id:int, data: dict):
         
         pass
 
     
-    def delete_types(self, ids: list[int]) :
+    def delete_resource_types(self, ids: list[int]) :
         
         pass
 
