@@ -38,14 +38,15 @@ class DatabaseAdapter(DatabasePort):
                 cursor.execute(query)
             self.connection.commit()
             result = None
-
             match command_type:
                 case "select":
                     result = (cursor.fetchall(), True)
                 case "insert":
-                    result = ({'message': f'Resource type with Name {cursor.fetchone()[0]} created successfully'}, True)
+                    result = ({'message': f'Object with Name {cursor.fetchone()[0]} created successfully'}, True)
+                case "update":
+                    result = ({'message': 'Object  updated successfully'}, True)
                 case "delete":
-                    result = ({'message': 'Resource type deleted successfully'}, True)
+                    result = ({'message': 'Object  deleted successfully'}, True)
                 case _:
                     result = ({'message': 'Command executed successfully'}, True)
             return result
@@ -75,8 +76,9 @@ class DatabaseAdapter(DatabasePort):
     def update_resource_type(self, resource_type_id, name, max_speed):
         query = "UPDATE resources_schema.resource_types SET name = %s, max_speed = %s WHERE id = %s"
         params = (name, max_speed, resource_type_id)
-        self.execute(query, params, "update")
-
+        return self.execute(query, params, "update")
+        
+    # if any resource exist type is live
     def delete_resource_type(self, type_ids):
         query = """
             DELETE FROM resources_schema.resource_types
@@ -90,26 +92,30 @@ class DatabaseAdapter(DatabasePort):
 
     def get_all_resources(self):
         query = "SELECT * FROM resources_schema.resources"
-        result = self.execute_query(query)
-        return json.dumps(result)
+        return self.execute(query)
 
 
     def create_resource(self, name, current_speed, resource_type_id):
         query = "INSERT INTO resources_schema.resources (name, current_speed, resource_type_id) VALUES (%s, %s, %s) RETURNING id"
         params = (name, current_speed, resource_type_id)
-        return self.execute_query(query, params)[0]
+        return self.execute(query, params, "insert")
 
     def get_resource(self, resource_id):
-        query = "SELECT * FROM resources_schema.resources WHERE id = %s"
+        query = """
+            SELECT r.*, rt.name as resource_type_name, rt.max_speed as resource_type_max_speed
+            FROM resources_schema.resources r
+            JOIN resources_schema.resource_types rt ON r.resource_type_id = rt.id
+            WHERE r.id = %s
+        """
         params = (resource_id,)
-        return self.execute_query(query, params)
+        return self.execute(query, params)
 
     def update_resource(self, resource_id, name, current_speed, resource_type_id):
         query = "UPDATE resources_schema.resources SET name = %s, current_speed = %s, resource_type_id = %s WHERE id = %s"
         params = (name, current_speed, resource_type_id, resource_id)
-        self.execute_query(query, params)
+        return self.execute(query, params, "update")
 
     def delete_resource(self, resource_id):
         query = "DELETE FROM resources_schema.resources WHERE id = %s"
         params = (resource_id,)
-        self.execute_query(query, params)
+        return self.execute(query, params, "delete")

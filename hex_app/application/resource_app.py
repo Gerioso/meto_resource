@@ -48,11 +48,54 @@ class ResourceAPI:
         if success:
             return result, 200
         else:
-            result, 500     
+            result, 500
 
-
-
-        
+    def create_resource(self, data):
+        name = data.get('name', None)
+        current_speed = data.get('current_speed', None)
+        resource_type_id = data.get('resource_type_id', None)
+        if name is None or current_speed is None or resource_type_id is None:
+            return {'error': 'Wrong data'}, 400
+        result, success = self.db.create_resource(name, int(current_speed), int(resource_type_id))
+        if success:
+            return result, 200
+        else:
+            result, 500
+    
+    def get_all_resources(self):
+        result, success = self.db.get_all_resources()
+        if success:
+            result = resources_to_json(result)
+            return result, 200
+        else:
+            result, 500
+    
+    def get_resource(self, resource_id):
+        result, success = self.db.get_resource(resource_id)
+        if success:
+            result = resources_to_json(result)
+            return result, 200
+        else:
+            result, 500
+    
+    def update_resource(self, id, data):
+        name = data.get('name', None)
+        current_speed = data.get('current_speed', None)
+        resource_type_id = data.get('resource_type_id', None)
+        if name is None or current_speed is None or resource_type_id is None:
+            return {'error': 'Wrong data'}, 400
+        result, success = self.db.update_resource(id, name, current_speed, resource_type_id)
+        if success:
+            return result, 200
+        else:
+            result, 500
+    
+    def delete_resource(self, id) :
+        result, success = self.db.delete_resource(id)
+        if success:
+            return result, 200
+        else:
+            result, 500       
 
 
 
@@ -74,7 +117,7 @@ def types_to_json(types):
         })
     return json.dumps(json_data)
 
-def resource_to_json(resources):
+def resources_to_json(resources):
     json_data = []
     for resource in resources:
         json_data.append({

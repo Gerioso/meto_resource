@@ -1,6 +1,6 @@
 from hex_app.application.resource_app import ResourceAPI
 from hex_app.adapters.postgresql_adapter import DatabaseAdapter
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 
 
 app = Flask(__name__)
@@ -41,27 +41,68 @@ def get_resource_type(resource_type_id):
 @app.route('/resource_types/<int:resource_type_id>', methods=['PUT'])
 def update_resource_type(resource_type_id):
     data = request.get_json()
-    # Здесь вы вызываете метод для обновления типа ресурса по ID в hexagonal-приложении
-    # Пример: hexagonal_app.handle_request({'action': 'update_resource_type', 'resource_type_id': resource_type_id, 'data': data})
-    return jsonify({'message': f'Resource type with ID {resource_type_id} updated'})
+    result, status = hexagonal_app.update_resource_type(resource_type_id, data)
+    response = jsonify(result)
+    response.status_code = status
+    return response
 
 @app.route('/resource_types/<int:resource_type_id>', methods=['DELETE'])
 def delete_resource_type(resource_type_id):
-    # Здесь вы вызываете метод для удаления типа ресурса по ID в hexagonal-приложении
-    # Пример: hexagonal_app.handle_request({'action': 'delete_resource_type', 'resource_type_id': resource_type_id})
-    return jsonify({'message': f'Resource type with ID {resource_type_id} deleted'})
+    result, status = hexagonal_app.delete_resource_types([resource_type_id])
+    response = jsonify(result)
+    response.status_code = status
+    return response
+
+@app.route('/resource_types', methods=['DELETE'])
+def delete_resource_types():
+    ids = request.args.get('ids')  
+    if ids:
+        id_list = [int(x) for x in ids.split(',')]  
+        result, status = hexagonal_app.delete_resource_types(id_list)
+        response = jsonify(result)
+        response.status_code = status
+        return response
+    else:
+        return abort(400, "Parameter ids not found for Delete request")
 
 
 
-
-
+@app.route('/resources', methods=['POST'])
+def create_resource():
+    data = request.get_json()
+    result, status = hexagonal_app.create_resource(data)
+    response = jsonify(result)
+    response.status_code = status
+    return response
 
 @app.route('/resources', methods=['GET'])
-def get_resources():
-    print(request)
-    result = hexagonal_app.handle_request(request)
-    print(result)
-    return jsonify(result)
+def get_all_resources():
+    result, status = hexagonal_app.get_all_resources()
+    response = jsonify(result)
+    response.status_code = status
+    return response
+
+@app.route('/resources/<int:resource_id>', methods=['GET'])
+def get_resource(resource_id):
+    result, status = hexagonal_app.get_resource(resource_id)
+    response = jsonify(result)
+    response.status_code = status
+    return response
+
+@app.route('/resources/<int:resource_id>', methods=['PUT'])
+def update_resource(resource_id):
+    data = request.get_json()
+    result, status = hexagonal_app.update_resource(resource_id, data)
+    response = jsonify(result)
+    response.status_code = status
+    return response
+
+@app.route('/resources/<int:resource_id>', methods=['DELETE'])
+def delete_resource(resource_id):
+    result, status = hexagonal_app.delete_resource(resource_id)
+    response = jsonify(result)
+    response.status_code = status
+    return response
 
 if __name__ == "__main__":
     app.run()
