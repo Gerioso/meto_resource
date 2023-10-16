@@ -38,17 +38,14 @@ class DatabaseAdapter(DatabasePort):
                 cursor.execute(query)
             self.connection.commit()
             result = None
-            match command_type:
-                case "select":
-                    result = (cursor.fetchall(), True)
-                case "insert":
-                    result = ({'message': f'Object with Name {cursor.fetchone()[0]} created successfully'}, True)
-                case "update":
-                    result = ({'message': 'Object  updated successfully'}, True)
-                case "delete":
-                    result = ({'message': 'Object  deleted successfully'}, True)
-                case _:
-                    result = ({'message': 'Command executed successfully'}, True)
+            if command_type == "select":
+                result = (cursor.fetchall(), True)
+            elif command_type == "insert":
+                result = ({'message': f'Object with Name {cursor.fetchone()[0]} created successfully'}, True)
+            elif command_type == "delete":
+                result = ({'message': 'Object type deleted successfully'}, True)
+            else:
+                result = ({'message': 'Command executed successfully'}, True)
             return result
         except psycopg2.Error as error:
             print("Error executing query:", error)
