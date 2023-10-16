@@ -33,7 +33,7 @@ def get_all_resource_types():
 
 @app.route('/resource_types/<int:resource_type_id>', methods=['GET'])
 def get_resource_type(resource_type_id):
-    result, status = hexagonal_app.get_resource_type(resource_type_id)
+    result, status = hexagonal_app.get_resource_type(int(resource_type_id))
     response = jsonify(result)
     response.status_code = status
     return response

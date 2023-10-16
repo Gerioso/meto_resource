@@ -68,7 +68,7 @@ class DatabaseAdapter(DatabasePort):
         query = "SELECT * FROM resources_schema.resource_types WHERE id = %s"
         params = (resource_type_id,)
         result =  self.execute(query, params)
-        return json.dumps(result)
+        return result
 
     def update_resource_type(self, resource_type_id, name, max_speed):
         query = "UPDATE resources_schema.resource_types SET name = %s, max_speed = %s WHERE id = %s"

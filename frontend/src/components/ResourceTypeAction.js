@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllResourceTypes, getResourceType, updateResourceType,  deleteResourceType} from './api'; // Импортируйте функцию из вашего файла api
+import { getAllResourceTypes, getResourceType, updateResourceType,  deleteResourceType} from './api'; 
 
 const GetResourceTypes = () => {
   const [resourceTypes, setResourceTypes] = useState([]);
@@ -31,9 +31,9 @@ const GetResourceTypes = () => {
 };
 
 const GetResourceType = () => {
-  const [resourceId, setResourceId] = useState(1); // Значение по умолчанию
-  const [resourceData, setResourceData] = useState(null); // Состояние для хранения данных типа ресурса
-  const [error, setError] = useState(null); // Состояние для хранения ошибок
+  const [resourceId, setResourceId] = useState(1); 
+  const [resourceData, setResourceData] = useState(null);
+  const [error, setError] = useState(null); 
 
   const handleIdChange = (event) => {
     setResourceId(event.target.value);
@@ -41,20 +41,7 @@ const GetResourceType = () => {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    getResourceType(resourceId)
-      .then((data) => {
-        if (data && data.id) {
-          setResourceData(data);
-        } else {
-          setResourceData(null); // Сброс данных, если тип не найден
-          setError('Resource not found');
-        }
-      })
-      .catch((error) => {
-        console.error('There has been a problem with your fetch operation:', error);
-        setResourceData(null); // Сброс данных в случае ошибки
-        setError('An error occurred');
-      });
+    handleGetResourceType(event, resourceId, setResourceData, setError);
   };
 
   return (
@@ -80,8 +67,11 @@ const GetResourceType = () => {
 };
 
 const UpdateResourceType = () => {
-  const [resourceId, setResourceId] = useState(1); // Значение по умолчанию
-  const [formData, setFormData] = useState({});
+  const [resourceId, setResourceId] = useState(1);
+  const [name, setName] = useState('');
+  const [maxSpeed, setMaxSpeed] = useState('');
+  const [resourceData, setResourceData] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleIdChange = (event) => {
     setResourceId(event.target.value);
@@ -89,35 +79,65 @@ const UpdateResourceType = () => {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    updateResourceType(resourceId, formData)
-      .then((data) => {
-        console.log('Resource type updated:', data);
+    const data = {
+      name: name,
+      max_speed: maxSpeed,
+    };
+    updateResourceType(resourceId, data)
+      .then((response) => {
+        console.log('Resource type updated:', response);
       })
       .catch((error) => {
         console.error('There has been a problem with your fetch operation:', error);
       });
   };
 
+  const handleGetOldType = (event) => {
+    handleGetResourceType(event, resourceId, setResourceData, setError);
+  };
+
+  useEffect(() => {
+    if (resourceData) {
+      setName(resourceData.name);
+      setMaxSpeed(resourceData.max_speed);
+    }
+  }, [resourceData]);
+
   return (
     <div>
       <h2>Update Resource Type</h2>
-      <form onSubmit={handleFormSubmit}>
+      <div>
         <label>
           Resource ID:
           <input type="text" value={resourceId} onChange={handleIdChange} />
+          <button onClick={handleGetOldType}>Get Resource Type</button>
         </label>
-        {/* Добавьте поля для обновления данных */}
-        <button type="submit">Submit</button>
-      </form>
+      </div>
+      {resourceData && (
+        <form onSubmit={handleFormSubmit}>
+          <label>
+            Name:
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+          </label>
+          <label>
+            Max Speed:
+            <input type="text" value={maxSpeed} onChange={(e) => setMaxSpeed(e.target.value)} />
+          </label>
+          <button type="submit">Submit</button>
+        </form>
+      )}
+      {error && <p>{error}</p>}
     </div>
   );
 };
 
 const DeleteResourceType = () => {
-  const [resourceId, setResourceId] = useState(1); // Значение по умолчанию
+  const [resourceId, setResourceId] = useState(1); 
+  const [successMessage, setSuccessMessage] = useState(null); 
 
   const handleIdChange = (event) => {
     setResourceId(event.target.value);
+    setSuccessMessage(null); 
   };
 
   const handleFormSubmit = (event) => {
@@ -125,11 +145,22 @@ const DeleteResourceType = () => {
     deleteResourceType(resourceId)
       .then((data) => {
         console.log('Resource type deleted:', data);
+        setSuccessMessage('Resource type successfully deleted'); 
       })
       .catch((error) => {
         console.error('There has been a problem with your fetch operation:', error);
       });
   };
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null); 
+      }, 1800);
+
+      return () => clearTimeout(timer); 
+    }
+  }, [successMessage]);
 
   return (
     <div>
@@ -141,8 +172,30 @@ const DeleteResourceType = () => {
         </label>
         <button type="submit">Submit</button>
       </form>
+      {successMessage && <p>{successMessage}</p>} {/* Success message */}
     </div>
   );
+};
+
+const handleGetResourceType = (event, resourceId, setResourceData, setError) => {
+  event.preventDefault();
+  getResourceType(resourceId)
+    .then((data) => {
+      console.log(data);
+      const formedData = JSON.parse(data);
+      if (Array.isArray(formedData) && formedData.length > 0) {
+        setResourceData(formedData[0]);
+        setError(null);
+      } else {
+        setResourceData(null); 
+        setError('Resource not found');
+      }
+    })
+    .catch((error) => {
+      console.error('There has been a problem with your fetch operation:', error);
+      setResourceData(null);
+      setError('An error occurred');
+    });
 };
 
 export { GetResourceTypes, GetResourceType, UpdateResourceType, DeleteResourceType };
