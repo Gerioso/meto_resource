@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { getAllResourceTypes, getResourceType, updateResourceType,  deleteResourceType} from './api'; 
+import { getAllResourceTypes, getResourceType, updateResourceType,  deleteResourceType, deleteMultipleResourceTypes} from './api'; 
 
 const GetResourceTypes = () => {
   const [resourceTypes, setResourceTypes] = useState([]);
 
+  const fetchResourceTypes = async () => {
+    try {
+      const data = await getAllResourceTypes();
+      console.log('All resource types:', data);
+      const formedData = JSON.parse(data)
+      setResourceTypes(formedData);
+    } catch (error) {
+      console.error('There has been a problem with your fetch operation:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchResourceTypes = async () => {
-      try {
-        const data = await getAllResourceTypes();
-        console.log('All resource types:', data);
-        const formedData = JSON.parse(data)
-        setResourceTypes(formedData);
-      } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
-      }
-    };
     fetchResourceTypes();
   }, []);
+
+  const handleRefresh = () => {
+    fetchResourceTypes();
+  };
+
   return (
     <div>
       <ul>
@@ -26,6 +32,7 @@ const GetResourceTypes = () => {
           </li>
         ))}
       </ul>
+      <button onClick={handleRefresh}>Refresh Data</button>
     </div>
   );
 };
@@ -198,4 +205,51 @@ const handleGetResourceType = (event, resourceId, setResourceData, setError) => 
     });
 };
 
-export { GetResourceTypes, GetResourceType, UpdateResourceType, DeleteResourceType };
+const DeleteMultipleResourceTypes = () => {
+  const [resourceIds, setResourceIds] = useState(''); 
+  const [successMessage, setSuccessMessage] = useState(null); 
+
+  const handleIdChange = (event) => {
+    setResourceIds(event.target.value);
+    setSuccessMessage(null); 
+  };
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const ids = resourceIds.split(',').map(id => parseInt(id.trim())); 
+    deleteMultipleResourceTypes(ids)
+      .then((data) => {
+        console.log('Resource types deleted:', data);
+        setSuccessMessage('Resource types successfully deleted'); 
+      })
+      .catch((error) => {
+        console.error('There has been a problem with your fetch operation:', error);
+      });
+  };
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null); 
+      }, 1800);
+
+      return () => clearTimeout(timer); 
+    }
+  }, [successMessage]);
+
+  return (
+    <div>
+      <h2>Delete Multiple Resource Types</h2>
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          Resource IDs (comma-separated):
+          <input type="text" value={resourceIds} onChange={handleIdChange} />
+        </label>
+        <button type="submit">Submit</button>
+      </form>
+      {successMessage && <p>{successMessage}</p>} {/* Сообщение об успехе */}
+    </div>
+  );
+};
+
+export { GetResourceTypes, GetResourceType, UpdateResourceType, DeleteResourceType, DeleteMultipleResourceTypes};

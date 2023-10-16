@@ -46,4 +46,12 @@ async function getResourceType(resourceTypeId) {
     return response.json();
   }
 
-export { createResourceType, getAllResourceTypes, getResourceType, updateResourceType, deleteResourceType };
+  async function deleteMultipleResourceTypes(ids) {
+    return fetch(`${baseURL}/resource_types?ids=${ids.join(',')}`, {
+      method: 'DELETE',
+    })
+      .then((response) => response.json())
+      .catch((error) => console.error('There has been a problem with your fetch operation:', error));
+  }
+
+export { createResourceType, getAllResourceTypes, getResourceType, updateResourceType, deleteResourceType, deleteMultipleResourceTypes };

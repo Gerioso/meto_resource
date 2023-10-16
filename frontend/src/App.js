@@ -2,7 +2,7 @@ import React from 'react';
 import WelcomePage from './components/WelcomePage';
 import ResourceTypeForm from './components/ResourceTypesForm';
 import ActionCard from './components/ActionCard';
-import {  GetResourceTypes, GetResourceType, UpdateResourceType, DeleteResourceType } from './components/ResourceTypeAction';
+import {  GetResourceTypes, GetResourceType, UpdateResourceType, DeleteResourceType , DeleteMultipleResourceTypes} from './components/ResourceTypeAction';
 
 
 function App() {
@@ -40,6 +40,7 @@ function App() {
       <ActionCard actionName="Get Resource Type" formComponent={<GetResourceType />} />
       <ActionCard actionName="Update Resource Type" formComponent={<UpdateResourceType />} />
       <ActionCard actionName="Delete Resource Type" formComponent={<DeleteResourceType />} />
+      <ActionCard actionName="Delete Multiple Resource Types" formComponent={<DeleteMultipleResourceTypes />} />
       {/* Добавьте другие ActionCards здесь */}
     </div>
   );
