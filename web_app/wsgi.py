@@ -104,5 +104,12 @@ def delete_resource(resource_id):
     response.status_code = status
     return response
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')  # Замените на свой фронтенд-адрес
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
+
 if __name__ == "__main__":
     app.run()
