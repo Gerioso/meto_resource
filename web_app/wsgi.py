@@ -99,14 +99,26 @@ def update_resource(resource_id):
 
 @app.route('/resources/<int:resource_id>', methods=['DELETE'])
 def delete_resource(resource_id):
-    result, status = hexagonal_app.delete_resource(resource_id)
+    result, status = hexagonal_app.delete_resources([resource_id])
     response = jsonify(result)
     response.status_code = status
     return response
 
+@app.route('/resources', methods=['DELETE'])
+def delete_resources():
+    ids = request.args.get('ids')  
+    if ids:
+        id_list = [int(x) for x in ids.split(',')]  
+        result, status = hexagonal_app.delete_resources(id_list)
+        response = jsonify(result)
+        response.status_code = status
+        return response
+    else:
+        return abort(400, "Parameter ids not found for Delete request")
+
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')  # Замените на свой фронтенд-адрес
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000') 
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response

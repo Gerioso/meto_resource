@@ -112,7 +112,7 @@ class DatabaseAdapter(DatabasePort):
         params = (name, current_speed, resource_type_id, resource_id)
         return self.execute(query, params, "update")
 
-    def delete_resource(self, resource_id):
-        query = "DELETE FROM resources_schema.resources WHERE id = %s"
-        params = (resource_id,)
+    def delete_resources(self, resource_ids):
+        query = "DELETE FROM resources_schema.resources WHERE id = ANY(%s)"
+        params = (resource_ids,)
         return self.execute(query, params, "delete")

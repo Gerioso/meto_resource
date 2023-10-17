@@ -90,22 +90,13 @@ class ResourceAPI:
         else:
             result, 500
     
-    def delete_resource(self, id) :
-        result, success = self.db.delete_resource(id)
+    def delete_resources(self, id) :
+        result, success = self.db.delete_resources(id)
         if success:
             return result, 200
         else:
             result, 500       
 
-
-
-    # def handle_request(self, request):
-    #     print("I'm here")
-    #     if request.method == 'GET':            
-    #         print(self.resource_adapter)  # Проверка инициализации объекта resource_adapter
-    #         result = self.resource_adapter.get_all_resources()
-    #         print(result)  # Проверка возвращаемых данных из метода get_all_resources
-    #         return result
         
 def types_to_json(types):
     json_data = []
