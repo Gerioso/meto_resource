@@ -54,4 +54,71 @@ async function getResourceType(resourceTypeId) {
       .catch((error) => console.error('There has been a problem with your fetch operation:', error));
   }
 
-export { createResourceType, getAllResourceTypes, getResourceType, updateResourceType, deleteResourceType, deleteMultipleResourceTypes };
+  async function createResource(data) {
+    const response = await fetch(`${baseURL}/resources`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  }
+  
+  async function getAllResources() {
+    const response = await fetch(`${baseURL}/resources`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  }
+  
+  async function getResource(resourceId) {
+    const response = await fetch(`${baseURL}/resources/${resourceId}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+  
+  async function updateResource(resourceId, data) {
+    const response = await fetch(`${baseURL}/resources/${resourceId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  }
+  
+  async function deleteResource(resourceId) {
+    const response = await fetch(`${baseURL}/resources/${resourceId}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
+  
+  async function deleteMultipleResources(ids) {
+    return fetch(`${baseURL}/resources?ids=${ids.join(',')}`, {
+      method: 'DELETE',
+    })
+      .then((response) => response.json())
+      .catch((error) => console.error('There has been a problem with your fetch operation:', error));
+  }
+
+  export {
+    createResourceType,
+    getAllResourceTypes,
+    getResourceType,
+    updateResourceType,
+    deleteResourceType,
+    deleteMultipleResourceTypes,
+    createResource,
+    getAllResources,
+    getResource,
+    updateResource,
+    deleteResource,
+    deleteMultipleResources,
+  };
