@@ -1,5 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { getAllResourceTypes, getResourceType, updateResourceType,  deleteResourceType, deleteMultipleResourceTypes} from './api'; 
+import { createResourceType, getAllResourceTypes, getResourceType, updateResourceType,  deleteResourceType, deleteMultipleResourceTypes} from './api'; 
+
+const СreateResourceType = () => {
+  const [name, setName] = useState('');
+  const [maxSpeed, setMaxSpeed] = useState('');
+  const [error, setError] = useState(null);
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleSpeedChange = (event) => {
+    setMaxSpeed(event.target.value);
+  };
+
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const data = {
+      name: name,
+      max_speed: parseInt(maxSpeed),
+    };
+    createResourceType(data)
+      .then((response) => {
+        console.log('Resource created:', response);
+      })
+      .catch((error) => {
+        console.error('There has been a problem with your fetch operation:', error);
+        setError('Creation failed')
+      });
+  };
+
+
+  return (
+    <div>
+      <h2>Create Resource</h2>
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          Name:
+          <input type="text" value={name} onChange={handleNameChange} />
+        </label>
+        <label>
+          Max Speed:
+          <input type="text" value={maxSpeed} onChange={handleSpeedChange} />
+        </label>
+        <button type="submit">Submit</button>
+      </form>
+      {error && <p>{error}</p>}
+    </div>
+  );
+};
 
 const GetResourceTypes = () => {
   const [resourceTypes, setResourceTypes] = useState([]);
@@ -252,4 +302,4 @@ const DeleteMultipleResourceTypes = () => {
   );
 };
 
-export { GetResourceTypes, GetResourceType, UpdateResourceType, DeleteResourceType, DeleteMultipleResourceTypes};
+export {СreateResourceType, GetResourceTypes, GetResourceType, UpdateResourceType, DeleteResourceType, DeleteMultipleResourceTypes};
