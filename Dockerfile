@@ -1,13 +1,12 @@
-FROM python:3.9-slim
-
-ENV FLASK_APP=wsgi.py
-ENV FLASK_RUN_HOST=127.0.0.1
-ENV FLASK_RUN_PORT=8000
+FROM python:3.10.12
 
 WORKDIR /app
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn", "-b", "127.0.0.1:8000", "web_app.wsgi:app"]
+EXPOSE 8000
+
+CMD [ "gunicorn", "-b", "0.0.0.0:8000", "web_app.wsgi:app" ]

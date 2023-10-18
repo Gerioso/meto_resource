@@ -8,7 +8,7 @@ db = DatabaseAdapter(
         database="metoResource",
         user="Paul",
         password="123qwe",
-        host="127.0.0.1",
+        host="db",
         port="5432"  
     )
 db.connect()
